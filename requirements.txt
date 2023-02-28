@@ -1,0 +1,4 @@
+jax~=0.2.17
+tqdm
+scikit-learn
+black
