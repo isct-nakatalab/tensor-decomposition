@@ -15,7 +15,7 @@ setuptools.setup(
     author_email="abc@example.com",
     description="It's pip... with git.",
     long_description=long_description,
-    url="https://github.com/tokyotech-nakatalab/dac22_tensor_decomposition",
+    url="https://github.com/tokyotech-nakatalab/tensor_decomposition",
     install_requires=_requires_from_file("requirements.txt"),
     packages=setuptools.find_packages("./src"),
     package_dir={"": "src"},
