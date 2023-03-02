@@ -2,11 +2,12 @@
 This repository is for tensor decomposition including below models;
 
 `src/model.py`
-- Parafac : tensor decomposition model assuming normal distribution
-- NonNegativeParafac : tensor decomposition model assuming normal distribution which returns non-negative predicted values
-- PoissonParafac : tensor decomposition model assuming poisson distribution
-- ZeroInflatedParafac ： tensor decomposition model assuming data to follow zero inflated poisson distribution 
+- **Parafac** : tensor decomposition model assuming normal distribution
+- **NonNegativeParafac** : tensor decomposition model assuming normal distribution which returns non-negative predicted values
+- **PoissonParafac** : tensor decomposition model assuming poisson distribution
+- **ZeroInflatedParafac** ： tensor decomposition model assuming data to follow zero inflated poisson distribution 
 
+----------------------------
 
 Import the above models with the following command.
 ```
