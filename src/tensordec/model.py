@@ -97,7 +97,7 @@ class Parafac:
                 self.matrix_list[tensor_id] = step_out
 
 
-class NonNegativeParafac:
+class NNParafac:
     def __init__(self, tensor, key, rank=5, num_step=1000, logging_step=100, init_values=None):
         """
         tensor : jaxlib.xla_extension.Array
@@ -107,7 +107,7 @@ class NonNegativeParafac:
         logging_step : int, number of logging steps
         init_values : list[DeviceArray, DeviceArray, ...], initial values of matrix
         """
-        super(NonNegativeParafac, self).__init__()
+        super(NNParafac, self).__init__()
         self.key = key
         self.input_shape = tensor.shape
         self.rank = rank
@@ -300,7 +300,7 @@ class PoissonParafac:
                 self.matrix_list[tensor_id] = step_out
 
 
-class ZeroInflatedParafac:
+class ZIPParafac:
     def __init__(self, tensor, key, rank=5, num_step=1000, logging_step=100, init_values=None, P_axis = None):
         """
         tensor : jaxlib.xla_extension.Array
@@ -311,7 +311,7 @@ class ZeroInflatedParafac:
         init_values : list[DeviceArray, DeviceArray, ...], initial values of matrix
         P_axis : list, axes of probability matrix to take average on 
         """
-        super(ZeroInflatedParafac, self).__init__()
+        super(ZIPParafac, self).__init__()
         self.key = key
         self.input_shape = tensor.shape
         self.num_axis = len(self.input_shape)
