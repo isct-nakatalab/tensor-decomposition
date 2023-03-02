@@ -11,7 +11,7 @@ This repository is for tensor decomposition including below models;
 
 Import the above models with the following command.
 ```
-! pip install -q git+https://$$TOKEN@github.com/tokyotech-nakatalab/tensor_decomposition.git
+! pip install -q git+https://@github.com/tokyotech-nakatalab/tensor_decomposition.git
 ```
 
 
