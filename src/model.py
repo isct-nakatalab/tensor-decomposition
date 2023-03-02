@@ -70,7 +70,7 @@ class Parafac:
                 [jnp.dot(M.T, M) for i, M in enumerate(matrix_list) if i != t]
             )
 
-            ztz = RR_list.prod(axis=0) + self.lmd * jnp.identity(self.rank)
+            ztz = RR_list.prod(axis=0)
 
             ztz_inverse = jnp.linalg.inv(ztz)
 
