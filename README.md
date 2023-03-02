@@ -7,6 +7,9 @@ This repository is for tensor decomposition including below models;
 - **PoissonParafac** : tensor decomposition model assuming data to follow poisson distribution
 - **ZeroInflatedParafac** ： tensor decomposition model assuming data to follow zero inflated poisson distribution 
 
+
+It allows faster decomposition than the existing libraries with the use of Just In Time (JIT) compilation of JAX Python function which enables efficient execution in XLA.
+
 ----------------------------
 
 ## Importing Tensor Decomposition Models
@@ -16,7 +19,6 @@ You can import this repository on your local.
 ```
 Import the above models with the following command.
 ```
-import tensordec
 from tensordec.model import Parafac, NonNegativeParafac, PoissonParafac, ZeroInflatedParafac
 ```
 
@@ -30,7 +32,7 @@ model = Parafac(tensor, key, rank=rank, num_step=num_step, logging_step=logging_
 ### Checking Predicted Tensor Values
 You can earn the predicted tensor and decomposed factors with the following command.
 ```
-pred_tensor = model.predict
+pred_tensor = model.predict()
 pred_matrixlist = model.matrix_list
 ```
 
