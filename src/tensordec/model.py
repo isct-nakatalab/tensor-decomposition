@@ -17,7 +17,6 @@ class Parafac:
         logging_step : int, number of logging steps
         init_values : list[DeviceArray, DeviceArray, ...], initial values of matrix
         """
-        super(Parafac, self).__init__()
         self.key = key
         self.input_shape = tensor.shape
         self.rank = rank
@@ -111,7 +110,6 @@ class NNParafac:
         logging_step : int, number of logging steps
         init_values : list[DeviceArray, DeviceArray, ...], initial values of matrix
         """
-        super(NNParafac, self).__init__()
         self.key = key
         self.input_shape = tensor.shape
         self.rank = rank
@@ -208,7 +206,6 @@ class PoissonParafac:
         logging_step : int, number of logging steps
         init_values : list[DeviceArray, DeviceArray, ...], initial values of matrix
         """
-        super(PoissonParafac, self).__init__()
         self.key = key
         self.input_shape = tensor.shape
         self.num_axis = len(self.input_shape)
@@ -327,7 +324,6 @@ class ZIPParafac:
         init_values : list[DeviceArray, DeviceArray, ...], initial values of matrix
         P_axis : list, axes of probability matrix to take average on 
         """
-        super(ZIPParafac, self).__init__()
         self.key = key
         self.input_shape = tensor.shape
         self.num_axis = len(self.input_shape)
