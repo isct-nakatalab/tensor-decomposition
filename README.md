@@ -1,7 +1,7 @@
 # Tensor Decomposition
 This repository is for tensor decomposition including below models;
 
-`src/model.py`
+`src/tensordec/model.py`
 - **Parafac** : tensor decomposition model assuming normal distribution
 - **NonNegativeParafac** : tensor decomposition model assuming normal distribution which returns non-negative predicted values
 - **PoissonParafac** : tensor decomposition model assuming poisson distribution
