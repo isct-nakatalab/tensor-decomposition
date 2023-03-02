@@ -3,7 +3,7 @@ This repository is for tensor decomposition including below models;
 
 `src/tensordec/model.py`
 - **Parafac** : tensor decomposition model assuming data to follow normal distribution
-- **NonNegativeParafac** : tensor decomposition model assuming data to follow normal distribution which returns non-negative predicted values
+- **NonNegativeParafac** : parafac model which returns non-negative predicted values
 - **PoissonParafac** : tensor decomposition model assuming data to follow poisson distribution
 - **ZeroInflatedParafac** ： tensor decomposition model assuming data to follow zero inflated poisson distribution 
 
