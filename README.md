@@ -1,4 +1,4 @@
-# tensor-decomposition
+# Tensor Decomposition
 This repository is for tensor decomposition including below models;
 
 `src/model.py`
@@ -9,6 +9,7 @@ This repository is for tensor decomposition including below models;
 
 ----------------------------
 
+## Installing Tensor Decomposition Models
 You can import this repository on your local.
 ```
 ! pip install git+https://github.com/tokyotech-nakatalab/tensor-decomposition.git
@@ -20,11 +21,13 @@ from tensrodec.model import Parafac, NonNegativeParafac, PoissonParafac, ZeroInf
 ```
 
 
+## Tensor Decomposition
 To perform tensor decomposition, specify the model with the corresponding input parameters.
 ```
 model = Parafac(tensor, key, rank=rank, num_step=num_step, logging_step=logging_step)
 ```
 
+### Checking Predicted Tensor Values
 You can earn the predicted tensor and decomposed factors with the following command.
 ```
 pred_tensor = model.predict
