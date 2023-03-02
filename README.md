@@ -9,9 +9,14 @@ This repository is for tensor decomposition including below models;
 
 ----------------------------
 
-Import the above models with the following command.
+You can import this repository on your local.
 ```
 ! pip install git+https://github.com/tokyotech-nakatalab/tensor-decomposition.git
+```
+Import the above models with the following command.
+```
+import tensordec
+from tensrodec.model import Parafac, NonNegativeParafac, PoissonParafac, ZeroInflatedParafac
 ```
 
 
