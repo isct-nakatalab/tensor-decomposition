@@ -98,6 +98,7 @@ class Parafac:
                 step_out = step(tensor, tensor_id, tuple(self.matrix_list))
                 self.matrix_list[tensor_id] = step_out
 
+
 class NNParafac:
     def __init__(
         self, tensor, key, rank=5, num_step=1000, logging_step=100, init_values=None
@@ -303,6 +304,7 @@ class PoissonParafac:
             for tensor_id in range(len(self.matrix_list)):
                 step_out = step(tensor, tensor_id, tuple(self.matrix_list))
                 self.matrix_list[tensor_id] = step_out
+
 
 class ZIPParafac:
     def __init__(
