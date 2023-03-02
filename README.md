@@ -9,7 +9,7 @@ This repository is for tensor decomposition including below models;
 
 ----------------------------
 
-## Installing Tensor Decomposition Models
+## Importing Tensor Decomposition Models
 You can import this repository on your local.
 ```
 ! pip install git+https://github.com/tokyotech-nakatalab/tensor-decomposition.git
