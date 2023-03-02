@@ -17,7 +17,7 @@ You can import this repository on your local.
 Import the above models with the following command.
 ```
 import tensordec
-from tensrodec.model import Parafac, NonNegativeParafac, PoissonParafac, ZeroInflatedParafac
+from tensordec.model import Parafac, NonNegativeParafac, PoissonParafac, ZeroInflatedParafac
 ```
 
 
