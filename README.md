@@ -5,7 +5,7 @@ This repository is for tensor decomposition including below models;
 - **Parafac** : tensor decomposition model assuming data to follow normal distribution
 - **NonNegativeParafac** : parafac model which returns non-negative predicted values
 - **PoissonParafac** : tensor decomposition model assuming data to follow poisson distribution
-- **ZeroInflatedParafac** ： tensor decomposition model assuming data to follow zero inflated poisson distribution 
+- **ZeroInflatedPoissonParafac** : tensor decomposition model assuming data to follow zero inflated poisson distribution 
 
 
 It allows faster decomposition than the existing libraries with the use of Just In Time (JIT) compilation of JAX Python function which enables efficient execution in XLA.
@@ -36,7 +36,7 @@ pred_tensor = model.predict()
 pred_matrixlist = model.matrix_list
 ```
 
-For ZeroInflatedParafac model, you can also earn the predicted probability matrix with the following command.
+For ZeroInflatedPoissonParafac model, you can also earn the mixture ratio of the Poisson distribution and a distribution that represents fixed probabilities of zero.
 ```
 pred_P = model.P
 ````
