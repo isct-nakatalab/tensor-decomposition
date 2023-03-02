@@ -6,7 +6,9 @@ from jax import jit
 
 
 class Parafac:
-    def __init__(self, tensor, key, rank=5, num_step=1000, logging_step=100, init_values=None):
+    def __init__(
+        self, tensor, key, rank=5, num_step=1000, logging_step=100, init_values=None
+    ):
         """
         tensor : jaxlib.xla_extension.Array
         key : jax.random.PRNGKey
@@ -32,7 +34,8 @@ class Parafac:
         else:
             self.matrix_list = list(
                 [
-                    jax.random.normal(self.key, shape=(size, rank)) for size in self.input_shape
+                    jax.random.normal(self.key, shape=(size, rank))
+                    for size in self.input_shape
                 ]
             )
 
@@ -53,7 +56,7 @@ class Parafac:
     def calc_loss(self, data_tensor, pred_tensor):
         mse_loss = ((pred_tensor - data_tensor) ** 2).sum()
         return mse_loss
-    
+
     def forward(self, data_tensor):
         """
         data_tensor : Tensor to be decomposed
@@ -98,7 +101,9 @@ class Parafac:
 
 
 class NonNegativeParafac:
-    def __init__(self, tensor, key, rank=5, num_step=1000, logging_step=100, init_values=None):
+    def __init__(
+        self, tensor, key, rank=5, num_step=1000, logging_step=100, init_values=None
+    ):
         """
         tensor : jaxlib.xla_extension.Array
         key : jax.random.PRNGKey
@@ -124,7 +129,8 @@ class NonNegativeParafac:
         else:
             self.matrix_list = list(
                 [
-                    jax.random.normal(self.key, shape=(size, rank)) ** 2 for size in self.input_shape
+                    jax.random.normal(self.key, shape=(size, rank)) ** 2
+                    for size in self.input_shape
                 ]
             )
 
@@ -145,7 +151,7 @@ class NonNegativeParafac:
     def calc_loss(self, data_tensor, pred_tensor):
         mse_loss = ((pred_tensor - data_tensor) ** 2).sum()
         return mse_loss
-    
+
     def forward(self, data_tensor):
         """
         data_tensor : Tensor to be decomposed
@@ -192,7 +198,9 @@ class NonNegativeParafac:
 
 
 class PoissonParafac:
-    def __init__(self, tensor, key, rank=5, num_step=1000, logging_step=100, init_values=None):
+    def __init__(
+        self, tensor, key, rank=5, num_step=1000, logging_step=100, init_values=None
+    ):
         """
         tensor : jaxlib.xla_extension.Array
         key : jax.random.PRNGKey
@@ -219,7 +227,8 @@ class PoissonParafac:
         else:
             self.matrix_list = list(
                 [
-                    jax.random.poisson(self.key, lam = 1, shape=(size, rank)) for size in self.input_shape
+                    jax.random.poisson(self.key, lam=1, shape=(size, rank))
+                    for size in self.input_shape
                 ]
             )
 
@@ -301,7 +310,16 @@ class PoissonParafac:
 
 
 class ZeroInflatedParafac:
-    def __init__(self, tensor, key, rank=5, num_step=1000, logging_step=100, init_values=None, P_axis = None):
+    def __init__(
+        self,
+        tensor,
+        key,
+        rank=5,
+        num_step=1000,
+        logging_step=100,
+        init_values=None,
+        P_axis=None,
+    ):
         """
         tensor : jaxlib.xla_extension.Array
         key : jax.random.PRNGKey
@@ -316,7 +334,6 @@ class ZeroInflatedParafac:
         self.input_shape = tensor.shape
         self.num_axis = len(self.input_shape)
         self.P = jnp.zeros(self.input_shape)
-        self.theta = jnp.zeros(self.input_shape)
         self.rank = rank
         self.num_step = num_step
         self.logging_step = logging_step
@@ -332,11 +349,17 @@ class ZeroInflatedParafac:
         else:
             self.matrix_list = list(
                 [
-                    jax.random.gamma(self.key, 1., shape=(size, self.rank)) for size in self.input_shape
+                    jax.random.gamma(self.key, 1.0, shape=(size, self.rank))
+                    for size in self.input_shape
                 ]
             )
 
-        self.optimize(tensor, num_step=self.num_step, logging_step=self.logging_step, P_axis = self.P_axis)
+        self.optimize(
+            tensor,
+            num_step=self.num_step,
+            logging_step=self.logging_step,
+            P_axis=self.P_axis,
+        )
 
     def make_operation(self):
         n_factors = len(self.input_shape)
@@ -358,33 +381,46 @@ class ZeroInflatedParafac:
             is_zero = self.zero
         else:
             p = self.P
-            is_zero = (data_tensor == 0)
+            is_zero = data_tensor == 0
         # calculate loss
-        nonzero_loss = ((data_tensor*(jnp.log(data_tensor +1e-8)-jnp.log(pred_tensor+1e-8))-data_tensor+pred_tensor-jnp.log(1-p+1e-8))*(1-is_zero)).sum()
-        zero_loss = -(jnp.log(p + (1 - p)*(jnp.exp(-pred_tensor)+1e-8))*is_zero).sum()
+        nonzero_loss = (
+            (
+                data_tensor
+                * (jnp.log(data_tensor + 1e-8) - jnp.log(pred_tensor + 1e-8))
+                - data_tensor
+                + pred_tensor
+                - jnp.log(1 - p + 1e-8)
+            )
+            * (1 - is_zero)
+        ).sum()
+        zero_loss = -(
+            jnp.log(p + (1 - p) * (jnp.exp(-pred_tensor) + 1e-8)) * is_zero
+        ).sum()
         return nonzero_loss + zero_loss
-    
+
     def forward(self, data_tensor):
         """
         data_tensor : Tensor to be decomposed
         """
         # reconstruction of tensor from decomposed values
-        pred_tensor = self.predict(expected = False)
+        pred_tensor = self.predict(expected=False)
         loss = self.calc_loss(data_tensor, pred_tensor, in_sample=False)
         return loss
 
-    def optimize(self, tensor, num_step=1000, logging_step=100, P_axis = None):
+    def optimize(self, tensor, num_step=1000, logging_step=100, P_axis=None):
         @partial(jax.jit, static_argnames=["t"])
-        def step(tensor, t, matrix_list, theta):
+        def step(tensor, t, matrix_list, Z):
             n = jnp.einsum(self.sum_operation, *matrix_list)
             d = jnp.einsum(self.operation, *matrix_list).reshape(*self.input_shape, -1)
             d = jnp.clip(d, a_min=jnp.finfo(float).eps)
             lamda = n / d
 
-            numerator = jnp.einsum(self.operation_lst[t], (1-theta)*tensor, lamda)
+            numerator = jnp.einsum(self.operation_lst[t], (1 - Z) * tensor, lamda)
 
             denominator = jnp.einsum(
-                self.operation_lst2[t], 1-theta, *[M for i, M in enumerate(matrix_list) if i != t]
+                self.operation_lst2[t],
+                1 - Z,
+                *[M for i, M in enumerate(matrix_list) if i != t],
             )
 
             denominator = jnp.clip(denominator, a_min=jnp.finfo(float).eps)
@@ -393,21 +429,13 @@ class ZeroInflatedParafac:
         @jit
         def update_Z(P, matrix_list):
             likelihood = jnp.exp(-jnp.einsum(self.operation, *matrix_list))
-            Z = self.zero * (P / (P + (1 - P) * (likelihood+1e-8)))
+            Z = self.zero * (P / (P + (1 - P) * (likelihood + 1e-8)))
             return Z
-        
-        @jit
-        def update_theta(Z, matrix_list):
-            likelihood = jnp.exp(-jnp.einsum(self.operation, *matrix_list))
-            theta = self.zero * (Z / (Z + (1 - Z) * (likelihood+1e-8)))
-            return theta
-        
 
         log_loss = []
 
-        zero_propotion = jnp.where(tensor == 0, True, False).sum() / tensor.size
-        self.zero = (tensor ==0)
-        self.Z = self.zero * 1e-8 
+        self.zero = tensor == 0
+        self.Z = self.zero * 1e-8
         self.P = self.Z.mean()
 
         target = "".join(chr(ord("a") + i) for i in range(len(tensor.shape)))
@@ -425,9 +453,17 @@ class ZeroInflatedParafac:
         )
         self.operation_lst2 = []
         for t, j in enumerate(target):
-            operation = target + ", " + " ,".join(chr(ord("a") + i) + "r" for i in range(self.num_axis) if i != t) + "->" + j + "r"
+            operation = (
+                target
+                + ", "
+                + " ,".join(
+                    chr(ord("a") + i) + "r" for i in range(self.num_axis) if i != t
+                )
+                + "->"
+                + j
+                + "r"
+            )
             self.operation_lst2.append(operation)
-
 
         for n_step in range(num_step):
             if n_step % logging_step == 0:
@@ -437,10 +473,9 @@ class ZeroInflatedParafac:
             for tensor_id in range(len(self.matrix_list)):
                 step_out = step(tensor, tensor_id, tuple(self.matrix_list), self.Z)
                 self.matrix_list[tensor_id] = step_out
-            self.theta = update_theta(self.Z, self.matrix_list)
 
             if P_axis:
-                self.P = self.Z.mean(axis = P_axis, keepdims=True)
+                self.P = self.Z.mean(axis=P_axis, keepdims=True)
             else:
                 self.P = self.Z.mean()
-            self.Z = update_Z(self.P,  self.matrix_list)
+            self.Z = update_Z(self.P, self.matrix_list)
