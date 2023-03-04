@@ -425,13 +425,13 @@ class ZIPParafac:
         @jit
         def update_Z(P, matrix_list):
             likelihood = jnp.exp(-jnp.einsum(self.operation, *matrix_list))
-            Z = self.zero * (P / (P + (1 - P) * (likelihood + 1e-8)))
+            Z = self.zero * ((P + 1e-8) / (P + (1 - P) * likelihood + 1e-8))
             return Z
 
         log_loss = []
 
         self.zero = tensor == 0
-        self.Z = self.zero * 1e-8
+        self.Z = self.zero
         self.P = self.Z.mean()
 
         target = "".join(chr(ord("a") + i) for i in range(len(tensor.shape)))
