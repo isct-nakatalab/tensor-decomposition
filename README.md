@@ -19,7 +19,7 @@ You can import this repository on your local.
 ```
 Import the above models with the following command.
 ```
-from tensordec.model import Parafac, NNParafa, PoissonParafac, ZIPParafac
+from tensordec.model import Parafac, NNParafac, PoissonParafac, ZIPParafac
 ```
 
 
