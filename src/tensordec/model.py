@@ -573,9 +573,7 @@ class COMPParafac:
         loss = self.calc_loss(data_tensor, pred_tensor)
         return loss
 
-    def optimize(self, tensor, num_step, logging_step):
-        l2_weight = 1e-8
-        min_nu = 0.5
+    def optimize(self, tensor, num_step, logging_step, l2_weight = 1e-8, min_nu = 0.5):
         self.max_step = int((self.max_value*2)**(1/min_nu))
         log_y_fac = []
         factor = 0
@@ -615,7 +613,7 @@ class COMPParafac:
             return r_z, r_zd1, r_zd2, zd1_z, zd2_z, rates
 
         @jit
-        def calc_z_step(j, r_z, r_zd1, r_zd2, zd1_z, zd2_z, lmd, nu):
+        def calc_zs_step(j, r_z, r_zd1, r_zd2, zd1_z, zd2_z, lmd, nu):
             r_z = (j)**nu / lmd * (1 + r_z)
             r_zd1 = ((j)**nu * (j-1) / (lmd*(j))) * (1 + r_zd1)
             r_zd2 = (j**nu)*(j-2)/j/lmd*(1 + r_zd2)
@@ -625,43 +623,15 @@ class COMPParafac:
 
             zd2_z_rate = (1 + 1/r_zd2) / (1 + 1/r_z)
             zd2_z = zd2_z * zd2_z_rate
-
-            rates = zd1_z_rate+zd2_z_rate
-
-            return r_z, r_zd1, r_zd2, zd1_z, zd2_z, rates
-
-        def calc_zs_iter(j, r_z, r_zd1, r_zd2, zd1_z, zd2_z, lmd, nu, truncate_tol):
-            r_z, r_zd1, r_zd2, zd1_z, zd2_z, rates = calc_z_step(j, r_z, r_zd1, r_zd2, zd1_z, zd2_z, lmd, nu)
-            continue_index = rates>(2+truncate_tol)
-            num_continue = continue_index.sum()
-            if num_continue == 0:
-                return zd1_z, zd2_z
-            argsort_index = jnp.argsort(-continue_index.astype(int))
-            
-            inverse_index = argsort_index.argsort()
-            r_z_sorted = r_z[argsort_index]
-            r_zd1_sorted = r_zd1[argsort_index]
-            r_zd2_sorted = r_zd2[argsort_index]
-            zd1_z_sorted = zd1_z[argsort_index]
-            zd2_z_sorted = zd2_z[argsort_index]
-            lmd_sorted = lmd[argsort_index]
-            zd1_z_continue, zd2_z_continue = calc_zs_iter(j+1, r_z_sorted[:num_continue], r_zd1_sorted[:num_continue], r_zd2_sorted[:num_continue], zd1_z_sorted[:num_continue], zd2_z_sorted[:num_continue], lmd_sorted[:num_continue], nu, truncate_tol)
-            zd1_z = jnp.concatenate([zd1_z_continue, zd1_z_sorted[num_continue:]])[inverse_index]
-            zd2_z = jnp.concatenate([zd2_z_continue, zd2_z_sorted[num_continue:]])[inverse_index]
-            return zd1_z, zd2_z
-
+            return r_z, r_zd1, r_zd2, zd1_z, zd2_z, jnp.max(zd1_z_rate)+jnp.max(zd2_z_rate)
+        
         def calc_zs(lmd, nu, max_step=1000000, truncate_tol=1e-10):
-            lmd_shape = lmd.shape
-            lmd = lmd.reshape(-1)
             r_z, r_zd1, r_zd2, zd1_z, zd2_z, rate_max = init_z_step(lmd, nu)
             begin = 4
-            zd1_z, zd2_z = calc_zs_iter(begin, r_z, r_zd1, r_zd2, zd1_z, zd2_z, lmd, nu, truncate_tol)
-            zd1_z = zd1_z.reshape(lmd_shape)
-            zd2_z = zd2_z.reshape(lmd_shape)
-            # for j in tqdm(range(begin, max_step)):
-            #     r_z, r_zd1, r_zd2, zd1_z, zd2_z, rate_max = calc_zs_iter(j, r_z, r_zd1, r_zd2, zd1_z, zd2_z, lmd, nu)
-                # if rate_max<=(2+truncate_tol):
-                #     break
+            for j in range(begin, max_step):
+                r_z, r_zd1, r_zd2, zd1_z, zd2_z, rate_max = calc_zs_step(j, r_z, r_zd1, r_zd2, zd1_z, zd2_z, lmd, nu)
+                if rate_max<=(2+truncate_tol):
+                    break
             return zd1_z, zd2_z
             
         @partial(jax.jit, static_argnames=["t"])
@@ -849,9 +819,7 @@ class ZICOMPParafac:
         loss = self.calc_loss(data_tensor, pred_tensor)
         return loss
 
-    def optimize(self, tensor, num_step, logging_step, mixture_ratio_axis=None):
-        l2_weight = 1e-8
-        min_nu = 0.5
+    def optimize(self, tensor, num_step, logging_step, mixture_ratio_axis=None, l2_weight = 1e-8, min_nu = 0.5):
         max_step = int((self.max_value*2)**(1/min_nu))
         log_y_fac = []
         factor = 0
@@ -1018,7 +986,7 @@ class ZICOMPParafac:
             out = jnp.clip(out, a_min=min_nu, a_max=10.)
             return out
 
-        def step_nu(tensor, matrix_list, nu, expectated_mixture_ratio, max_step=50, truncate_tol=1e-6):
+        def step_nu(matrix_list, nu, expectated_mixture_ratio, max_step=50, truncate_tol=1e-6):
             lmd = jnp.einsum(self.operation, *matrix_list)
             zd1_z, zd2_z = calc_zs_nu(lmd, nu, max_step=max_step, truncate_tol=truncate_tol)
             out = calc_next_value_nu(zd1_z, zd2_z, lmd, nu, expectated_mixture_ratio)
@@ -1034,7 +1002,7 @@ class ZICOMPParafac:
                 step_out = step(tensor, tensor_id, tuple(self.matrix_list), self.nu, expectated_mixture_ratio, max_step=max_step)
                 self.matrix_list[tensor_id] = step_out
 
-            self.nu = step_nu(tensor, tuple(self.matrix_list), self.nu, expectated_mixture_ratio, max_step=max_step)
+            self.nu = step_nu(tuple(self.matrix_list), self.nu, expectated_mixture_ratio, max_step=max_step)
             expectated_mixture_ratio = update_mixture_ratio(self.mixture_ratio, self.matrix_list)
             if mixture_ratio_axis:
                 self.mixture_ratio = expectated_mixture_ratio.mean(axis=mixture_ratio_axis, keepdims=True)
