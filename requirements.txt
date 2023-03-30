@@ -1,4 +1,1 @@
 jax~=0.4.4
-tqdm
-scikit-learn
-black
