@@ -431,7 +431,7 @@ class ZIPParafac:
         log_loss = []
 
         self.zero = tensor == 0
-        self.Z = self.zero * 1e-8
+        self.Z = self.zero
         self.P = self.Z.mean()
 
         target = "".join(chr(ord("a") + i) for i in range(len(tensor.shape)))
